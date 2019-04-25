@@ -26,16 +26,23 @@ export default class Router extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Username: ""
+      Username: "Usernamee"
     };
   }
 
-  // onButtonPress = () => {
-  //   Alert.alert("You Pressed Logged Out");
-  // };
+  onLogOutButtonPress = () => {
+    fire.auth().signOut();
+  };
 
   render() {
-    return <MyApp screenProps={{ Username: "Username" }} />;
+    return (
+      <MyApp
+        screenProps={{
+          Username: this.state.Username,
+          onLogOutButtonPress: this.onLogOutButtonPress
+        }}
+      />
+    );
   }
 }
 
@@ -54,34 +61,18 @@ const CustomDrawerContentComponent = props => (
     <Content>
       <StatusBar backgroundColor={STATUSBAR_COLOR} />
       <DrawerItems {...props} />
-      {/* <Button
+      <Button
         rounded
         block
         iconLeft
-        onPress={() =>
-          Alert.alert(
-            "Log out",
-            "Do you want to logout?",
-            [
-              {
-                text: "Cancel",
-                onPress: () => null
-              },
-              {
-                text: "Confirm",
-                onPress: () => {
-                   fire.auth().signOut();
-              }
-              }
-            ],
-            { cancelable: false }
-          )
-        } //Big Problem here <---------- Need to pass this as a screenProp
+        onPress={() => {
+          props.screenProps.onLogOutButtonPress();
+        }}
         style={styles.button}
       >
         <Text style={{ color: "white" }}>Log Out</Text>
         <Icon name="log-out" />
-      </Button> */}
+      </Button>
     </Content>
   </Container>
 );

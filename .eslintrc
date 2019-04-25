@@ -2,6 +2,7 @@
 {
     "extends": "rallycoding",
     "rules": {
-        "global-require": 0  
+        "global-require": 0,
+        "quotes": [0, "double"] 
     }
 }

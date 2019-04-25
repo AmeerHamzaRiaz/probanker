@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
-import { Root, Spinner } from 'native-base';
-import Login from './Login';
-import Router from './Router';
+import React, { Component } from "react";
+import { Root } from "native-base";
+import Login from "./Login";
+import Router from "./Router";
+import Loading from "./Loading";
+import fire from "../config/fire";
 
 export default class App extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -11,12 +13,27 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoggedIn: false
+      isLoggedIn: null
     };
   }
+
+  componentDidMount() {
+    this.authListener();
+  }
+
   changeLoginStatus = () => {
     this.setState({ isLoggedIn: true });
   };
+
+  authListener() {
+    fire.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({ isLoggedIn: true });
+      } else {
+        this.setState({ isLoggedIn: false });
+      }
+    });
+  }
 
   renderContent = () => {
     switch (this.state.isLoggedIn) {
@@ -30,12 +47,10 @@ export default class App extends Component {
           />
         );
       default:
-        return <Spinner size="large" color="orange" />;
+        return <Loading />;
     }
   };
   render() {
-    //if logged in return home page else return login page
-    //abhi logic ni daali ye
     return <Root>{this.renderContent()}</Root>;
   }
 }

@@ -11,6 +11,7 @@ import {
   Image
 } from 'react-native';
 import { Spinner, Button, Item, Input, Icon } from 'native-base';
+import firebase from '../config/fire';
 
 const MAIN_COLOR = '#e74c3c';
 const STATUSBAR_COLOR = '#c0392b';
@@ -49,10 +50,16 @@ export default class Login extends Component {
       this.setState({ loading: false });
     } else {
       // else if Login Credentials are right
-      setTimeout(() => {
-        this.setState({ loading: false });
-        this.props.changeLoginStatus();
-      }, 10000);
+        firebase.auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(success => {
+          this.props.changeLoginStatus();
+          this.setState({ loading: false });
+        })
+        .catch(err => {
+          this.setState({ loading: false });
+          Alert.alert(err.code, err.message);
+        });
     }
   }
 

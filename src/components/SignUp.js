@@ -76,7 +76,7 @@ export default class SignUp extends Component {
             .then(succ => {
               this.setState({ loading: false });
               Alert.alert("Successfully Registered", "Go back to previous screen. ");
-            });
+            }); 
         })
         .catch(error => {
           this.setState({ loading: false });
@@ -108,7 +108,7 @@ export default class SignUp extends Component {
 
         // You can also display the image using data:
         const source = { uri: `data:image/jpeg;base64,${response.data}` };
-
+        console.log(source);
         this.setState({
           avatar: source
         });

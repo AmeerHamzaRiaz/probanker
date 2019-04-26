@@ -4,6 +4,7 @@ import Login from "./Login";
 import Router from "./Router";
 import Loading from "./Loading";
 import fire from "../config/fire";
+import Home from "./Home";
 
 export default class App extends Component {
   static navigationOptions = ({ navigation }) => ({
@@ -51,6 +52,8 @@ export default class App extends Component {
     }
   };
   render() {
-    return <Root>{this.renderContent()}</Root>;
+     return <Root>{this.renderContent()}</Root>;
+    //return <Root>{<Home />}</Root>;
+
   }
 }

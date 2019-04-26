@@ -26,10 +26,25 @@ export default class Router extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      Username: "Usernamee"
+      Username: "Username"
     };
   }
 
+  componentDidMount() {
+    const databaseRef = fire.database();
+    const uid = fire.auth().currentUser.uid;
+
+    //uploads the jobId and sets it to true then updates the list
+    databaseRef
+      .ref(`/users/${uid}/name`)
+      .once("value")
+      .then(snapshot => {
+        this.setState({ Username: snapshot.val() });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
   onLogOutButtonPress = () => {
     fire.auth().signOut();
   };

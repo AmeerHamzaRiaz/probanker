@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { Alert } from 'react-native';
 import {
   Icon,
   Container,
@@ -11,9 +11,8 @@ import {
   Title
 } from 'native-base';
 import ImagePicker from 'react-native-image-picker';
-import fire from 'firebase';
+import Chat from '../components/Chat';
 
-const BLUE_STATUS = '#c0392b';
 const MAIN_COLOR = '#e74c3c';
 
 export default class Home extends Component {
@@ -24,10 +23,6 @@ export default class Home extends Component {
       <Icon name="home" style={{ color: tintColor, fontSize: 22 }} />
     )
   });
-
-  onButtonPress = () => {
-    fire.auth().signOut();
-  }
 
   launchCamera = () => {
     const options = {
@@ -54,6 +49,7 @@ export default class Home extends Component {
       }
     });
   };
+
   render() {
     return (
       <Container>
@@ -80,14 +76,7 @@ export default class Home extends Component {
             </Button>
           </Right>
         </Header>
-       
-        <Button
-        rounded
-        block
-        iconLeft
-         onPress={() => this.onButtonPress()} //Big Problem here <---------- Need to pass this as a screenProp
-       // style={styles.button}
-        />
+       <Chat />
       </Container>
     );
   }

@@ -79,7 +79,7 @@ export default class Chat extends Component {
         messages: GiftedChat.append(previousState.messages, message)
       }));
     } catch (error) {
-      Alert.alert("Something Went Wrong");
+      Alert.alert("Check your internet");
     }
   };
 
@@ -100,13 +100,15 @@ export default class Chat extends Component {
         messages: GiftedChat.append(previousState.messages, message)
       }));
     } catch (error) {
-      Alert.alert("Something Went Wrong");
+      Alert.alert("Check your internet and try again");
     }
   };
 
   readText = async (txt) => {
-    Tts.stop();
-    Tts.speak(txt);
+    Tts.getInitStatus().then(() => {     
+      Tts.stop();
+      Tts.speak(txt); 
+    });
   };
 
   renderBubble(props) {

@@ -1,4 +1,5 @@
 import base64 from 'react-native-base64';
+import { Alert } from 'react-native';
 
 const USERNAME = 'apikey';
 const PASSWORD = 'MXORuvTctcKP5IbXPySFM0wsE1exIHEvuJbZn2T9NwTh';
@@ -31,11 +32,11 @@ MessageRequest = (input, context = {}) => {
   })
   .then((response) => response.json())
   .then((responseJson) => {
-     console.log(responseJson);
+    console.log(responseJson);
     return responseJson;
   })
   .catch((error) => {
-    console.error(error);
+    Alert.alert("ERROR", error);
   });
 };
 

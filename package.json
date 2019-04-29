@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "firebase": "^5.10.0",
+    "ibm-watson": "^4.0.2",
     "native-base": "^2.8.1",
     "react": "16.6.1",
     "react-native": "^0.59.6",
+    "react-native-base64": "0.0.2",
     "react-native-gifted-chat": "^0.7.3",
     "react-native-image-picker": "^0.27.1",
     "react-navigation": "^2.0.0"

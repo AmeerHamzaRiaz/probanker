@@ -1,6 +1,8 @@
 import React, { Component } from "react";
+import { Alert } from 'react-native';
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import fire from '../config/fire';
+import { MessageRequest } from '../config/Assistant';
 
 const MAIN_COLOR = '#e74c3c';
 const databaseRef = fire.database();
@@ -10,50 +12,85 @@ export default class Chat extends Component {
     super(props);
     this.state = {
       messages: [],
-      Username: "Ameer",
-      uid: "1"
+      Username: "",           //  NEED TO
+      balance: null,         //  ASSIGN THESE FROM
+      uid: null,            //  FIREBASE
+      conversationID: null,  
+      context: null,
     };
   }
 
-  
   componentDidMount() {
-    //  console.log(uid);
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: `Hello Mr ${this.state.Username}, Men apki kia madad kar sakta hun ?`,
-          createdAt: new Date(),
-          user: { 
-            _id: 2
-          }
-        },
-      ]
+    //TODO
+    //connect to firebase and fetch name, balance, uid
+    const uid = fire.auth().currentUser.uid;
+    console.log(`uid ${uid}`);
+    databaseRef
+      .ref(`/users/${uid}`)
+      .once("value")
+      .then(snapshot => {
+        console.log(snapshot.val());
+        this.setState({ Username: snapshot.val().name, balance: snapshot.val().accountBalance, uid },
+        () => {
+          this.initalMessage();
+        });
+      })
+      .catch(error => {
+        console.log("in catch");
+        Alert.alert(error);
+      });
+  }
+
+  onSend = (message = []) => {
+    this.setState((previousState) => ({
+      messages: GiftedChat.append(previousState.messages, message),
+    }), () => {
+      this.getMessage(message[0].text.replace(/[\n\r]+/g, ' '));
     });
   }
 
-  onSend(messages = []) {
-    let uid = fire.auth().currentUser.uid;
-    let val = Math.floor((Math.random() * 10000) + 1);
+  getMessage = async (text) => {
+    try {
+      const response = await MessageRequest(text, this.state.context);
+      console.log(response);
+      let txt = response.output.text.join(' ');
+      if (txt == 'Apka account balance he  rupay.') {
+        console.log('equals');
+        txt = txt.replace(' rupay', `${this.state.balance} rupay`);
+      }
+      this.setState({ context: response.context });
+      const message = {
+        _id: Math.round(Math.random() * 1000000).toString(),
+        text: txt,
+        createdAt: new Date(),
+        user: { _id: '2' },
+      };
+      this.setState((previousState) => ({
+        messages: GiftedChat.append(previousState.messages, message),
+      }));
+    } catch (error) {
+      Alert.alert('Something Went Wrong');
+    }
+  }
 
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages)
-    }), () => {
-      let newPostRef = databaseRef.ref(`messages/${uid}/`)
-      .push();
-      databaseRef.ref(`messages/${uid}/${newPostRef.key}`)
-      .set({
-        _id: val,
-        text: messages[0].text,
-        createdAt: messages[0].createdAt.toString(),
-      });
-      console.log(newPostRef.key);
-      databaseRef.ref(`messages/${uid}/${newPostRef.key}/user`)
-      .set({
-        _id: 1
-      });
-    });
-    console.log(messages[0].createdAt);
+  initalMessage = async () => {
+    try {
+      const response = await MessageRequest("");
+      this.setState({ context: response.context });
+      let txt = response.output.text.join(' ');
+      txt = txt.replace('Mr.   ', `Mr. ${this.state.Username}`);  
+      const message = {
+        _id: Math.round(Math.random() * 1000000).toString(),
+        text: txt,
+        createdAt: new Date(),
+        user: { _id: '2' }
+      };
+      this.setState((previousState) => ({
+        messages: GiftedChat.append(previousState.messages, message),
+      }));
+    } catch (error) {
+      Alert.alert("Something Went Wrong");
+    }
   }
 
   renderBubble(props) {

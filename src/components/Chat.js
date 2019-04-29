@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Alert } from 'react-native';
+import { Alert } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import fire from '../config/fire';
-import { MessageRequest } from '../config/Assistant';
+import Tts from "react-native-tts";
+import fire from "../config/fire";
+import { MessageRequest } from "../config/Assistant";
 
-const MAIN_COLOR = '#e74c3c';
+const MAIN_COLOR = "#e74c3c";
 const databaseRef = fire.database();
 
 export default class Chat extends Component {
@@ -12,16 +13,15 @@ export default class Chat extends Component {
     super(props);
     this.state = {
       messages: [],
-      Username: "",           //  NEED TO
-      balance: null,         //  ASSIGN THESE FROM
-      uid: null,            //  FIREBASE
-      conversationID: null,  
-      context: null,
+      Username: "",   //  NEED TO
+      balance: null, //  ASSIGN THESE FROM
+      uid: null,    //  FIREBASE
+      conversationID: null,
+      context: null
     };
   }
 
   componentDidMount() {
-    //TODO
     //connect to firebase and fetch name, balance, uid
     const uid = fire.auth().currentUser.uid;
     console.log(`uid ${uid}`);
@@ -30,10 +30,16 @@ export default class Chat extends Component {
       .once("value")
       .then(snapshot => {
         console.log(snapshot.val());
-        this.setState({ Username: snapshot.val().name, balance: snapshot.val().accountBalance, uid },
-        () => {
-          this.initalMessage();
-        });
+        this.setState(
+          {
+            Username: snapshot.val().name,
+            balance: snapshot.val().accountBalance,
+            uid
+          },
+          () => {
+            this.initalMessage();
+          }
+        );
       })
       .catch(error => {
         console.log("in catch");
@@ -42,56 +48,66 @@ export default class Chat extends Component {
   }
 
   onSend = (message = []) => {
-    this.setState((previousState) => ({
-      messages: GiftedChat.append(previousState.messages, message),
-    }), () => {
-      this.getMessage(message[0].text.replace(/[\n\r]+/g, ' '));
-    });
-  }
+    this.setState(
+      previousState => ({
+        messages: GiftedChat.append(previousState.messages, message)
+      }),
+      () => {
+        this.getMessage(message[0].text.replace(/[\n\r]+/g, " "));
+      }
+    );
+  };
 
-  getMessage = async (text) => {
+  getMessage = async text => {
     try {
       const response = await MessageRequest(text, this.state.context);
       console.log(response);
-      let txt = response.output.text.join(' ');
-      if (txt == 'Apka account balance he  rupay.') {
-        console.log('equals');
-        txt = txt.replace(' rupay', `${this.state.balance} rupay`);
+      let txt = response.output.text.join(" ");
+      if (txt == "Apka account balance he  rupay.") {
+        console.log("equals");
+        txt = txt.replace(" rupay", `${this.state.balance} rupay`);
       }
+      Tts.speak(txt);
       this.setState({ context: response.context });
       const message = {
         _id: Math.round(Math.random() * 1000000).toString(),
         text: txt,
         createdAt: new Date(),
-        user: { _id: '2' },
+        user: { _id: "2" }
       };
-      this.setState((previousState) => ({
-        messages: GiftedChat.append(previousState.messages, message),
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, message)
       }));
     } catch (error) {
-      Alert.alert('Something Went Wrong');
+      Alert.alert("Something Went Wrong");
     }
-  }
+  };
 
   initalMessage = async () => {
     try {
       const response = await MessageRequest("");
       this.setState({ context: response.context });
-      let txt = response.output.text.join(' ');
-      txt = txt.replace('Mr.   ', `Mr. ${this.state.Username}`);  
+      let txt = response.output.text.join(" ");
+      txt = txt.replace("Mr.   ", `Mr. ${this.state.Username}`);
+      Tts.speak(txt);
       const message = {
         _id: Math.round(Math.random() * 1000000).toString(),
         text: txt,
         createdAt: new Date(),
-        user: { _id: '2' }
+        user: { _id: "2" }
       };
-      this.setState((previousState) => ({
-        messages: GiftedChat.append(previousState.messages, message),
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, message)
       }));
     } catch (error) {
       Alert.alert("Something Went Wrong");
     }
-  }
+  };
+
+  readText = async (txt) => {
+    Tts.stop();
+    Tts.speak(txt);
+  };
 
   renderBubble(props) {
     return (

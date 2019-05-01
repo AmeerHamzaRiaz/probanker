@@ -3,6 +3,8 @@ package com.docassistant;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.zmxv.RNSound.RNSoundPackage;
+import com.goodatlas.audiorecord.RNAudioRecordPackage;
 import net.no_mad.tts.TextToSpeechPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.facebook.react.ReactNativeHost;
@@ -25,6 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSoundPackage(),
+            new RNAudioRecordPackage(),
             new TextToSpeechPackage(),
             new ImagePickerPackage()
       );

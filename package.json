@@ -7,14 +7,18 @@
     "test": "jest"
   },
   "dependencies": {
+    "buffer": "^5.2.1",
     "firebase": "^5.10.0",
     "ibm-watson": "^4.0.2",
     "native-base": "^2.8.1",
     "react": "16.6.1",
     "react-native": "^0.59.6",
+    "react-native-audio-record": "^0.2.0",
     "react-native-base64": "0.0.2",
     "react-native-gifted-chat": "^0.7.3",
     "react-native-image-picker": "^0.27.1",
+    "react-native-permissions": "^1.1.1",
+    "react-native-sound": "^0.10.12",
     "react-native-tts": "^3.0.0",
     "react-navigation": "^2.0.0"
   },

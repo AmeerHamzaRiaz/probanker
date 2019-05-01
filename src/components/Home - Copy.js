@@ -10,16 +10,26 @@ import {
   Body,
   Title
 } from "native-base";
-import { Buffer } from "buffer";
-import Permissions from "react-native-permissions";
-import Sound from "react-native-sound";
-import AudioRecord from "react-native-audio-record";
+import { Buffer } from 'buffer';
+import Permissions from 'react-native-permissions';
+import Sound from 'react-native-sound';
+import AudioRecord from 'react-native-audio-record';
 import Chat from "../components/Chat";
 
 const MAIN_COLOR = "#e74c3c";
 
 export default class Home extends Component {
   sound = null;
+  constructor(props) {
+    super(props);
+    this.state = {
+      audioFile: '',
+      recording: false,
+      loaded: false,
+      paused: true
+    };
+  }
+
   static navigationOptions = ({ navigation }) => ({
     title: "Home",
     drawerLabel: "Home",
@@ -27,16 +37,6 @@ export default class Home extends Component {
       <Icon name="home" style={{ color: tintColor, fontSize: 22 }} />
     )
   });
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      audioFile: "",
-      recording: false,
-      loaded: false,
-      paused: true
-    };
-  }
 
   async componentDidMount() {
     await this.checkPermission();
@@ -149,79 +149,14 @@ export default class Home extends Component {
           </Body>
 
           <Right>
-            <Button
-              danger
-              onPress={() => this.stop()}
-              disabled={!this.state.recording}
-              style={{
-                marginRight: 10,
-                alignSelf: "flex-end",
-                paddingTop: 0,
-                paddingBottom: 0,
-                height: 40,
-                width: 40,
-                justifyContent: "center"
-              }}
-            >
-              <Icon
-                type="FontAwesome"
-                android="stop"
-                ios="stop"
-                style={{
-                  color: "white",
-                  marginLeft: 0,
-                  marginRight: 0,
-                  fontSize: 24
-                }}
-              />
+          <Button transparent onPress={() => this.stop()} disabled={!this.state.recording} >
+              <Icon name="pause" style={{ color: 'white' }} />
             </Button>
-            <Button
-              danger
-              onPress={() => this.play()}
-              disabled={!this.state.audioFile}
-              style={{
-                marginRight: 10,
-                alignSelf: "flex-end",
-                paddingTop: 0,
-                paddingBottom: 0,
-                height: 40,
-                width: 40,
-                justifyContent: "center"
-              }}
-            >
-              <Icon
-                name="play"
-                style={{
-                  color: "white",
-                  marginLeft: 0,
-                  marginRight: 0,
-                  fontSize: 24
-                }}
-              />
+            <Button transparent onPress={() => this.play()} disabled={!this.state.audioFile}>
+              <Icon name="play" style={{ color: 'white' }} />
             </Button>
-
-            <Button
-              danger
-              onPress={() => this.start()}
-              disabled={this.state.recording}
-              style={{
-                alignSelf: "flex-end",
-                paddingTop: 0,
-                paddingBottom: 0,
-                height: 40,
-                width: 40,
-                justifyContent: "center"
-              }}
-            >
-              <Icon
-                name="mic"
-                style={{
-                  color: "white",
-                  marginLeft: 0,
-                  marginRight: 0,
-                  fontSize: 24
-                }}
-              />
+            <Button transparent onPress={() => this.start()} disabled={this.state.recording}>
+              <Icon name="mic" style={{ color: "white" }} />
             </Button>
           </Right>
         </Header>

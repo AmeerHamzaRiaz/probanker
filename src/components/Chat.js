@@ -13,9 +13,9 @@ export default class Chat extends Component {
     super(props);
     this.state = {
       messages: [],
-      Username: "",   //  NEED TO
+      Username: "", //  NEED TO
       balance: null, //  ASSIGN THESE FROM
-      uid: null,    //  FIREBASE
+      uid: null, //  FIREBASE
       conversationID: null,
       context: null
     };
@@ -43,7 +43,7 @@ export default class Chat extends Component {
       })
       .catch(error => {
         console.log("in catch");
-        Alert.alert(error);
+        Alert.alert("Firebase Error");
       });
   }
 
@@ -86,28 +86,36 @@ export default class Chat extends Component {
   initalMessage = async () => {
     try {
       const response = await MessageRequest("");
-      this.setState({ context: response.context });
-      let txt = response.output.text.join(" ");
-      txt = txt.replace("Mr.   ", `Mr. ${this.state.Username}`);
-      Tts.speak(txt);
-      const message = {
-        _id: Math.round(Math.random() * 1000000).toString(),
-        text: txt,
-        createdAt: new Date(),
-        user: { _id: "2" }
-      };
-      this.setState(previousState => ({
-        messages: GiftedChat.append(previousState.messages, message)
-      }));
+      console.log(response);
+      // if (response === undefined) {
+        this.setState({ context: response.context });
+        let txt = response.output.text.join(" ");
+        txt = txt.replace("Mr.   ", `Mr. ${this.state.Username}`);
+        Tts.speak(txt);
+        const message = {
+          _id: Math.round(Math.random() * 1000000).toString(),
+          text: txt,
+          createdAt: new Date(),
+          user: { _id: "2" }
+        };
+        this.setState(previousState => ({
+          messages: GiftedChat.append(previousState.messages, message)
+        }));
+      // } else {
+        // Alert.alert(
+        //   "Cannot connect to IBM WATSON",
+        //   "Check your internet connection"
+        // );
+      // }
     } catch (error) {
       Alert.alert("Check your internet and try again");
     }
   };
 
-  readText = async (txt) => {
-    Tts.getInitStatus().then(() => {     
+  readText = async txt => {
+    Tts.getInitStatus().then(() => {
       Tts.stop();
-      Tts.speak(txt); 
+      Tts.speak(txt);
     });
   };
 

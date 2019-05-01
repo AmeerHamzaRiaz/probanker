@@ -32,7 +32,6 @@ MessageRequest = (input, context = {}) => {
   })
   .then((response) => response.json())
   .then((responseJson) => {
-    console.log(responseJson);
     return responseJson;
   })
   .catch((error) => {

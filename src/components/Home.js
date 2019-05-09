@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Alert } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import {
   Icon,
   Container,
@@ -15,6 +15,7 @@ import Permissions from "react-native-permissions";
 import Sound from "react-native-sound";
 import AudioRecord from "react-native-audio-record";
 import Chat from "../components/Chat";
+import RNFetchBlob from 'rn-fetch-blob';
 
 const MAIN_COLOR = "#e74c3c";
 
@@ -34,7 +35,9 @@ export default class Home extends Component {
       audioFile: "",
       recording: false,
       loaded: false,
-      paused: true
+      paused: true,
+      isUploading: false,
+      trans : ""
     };
   }
 
@@ -53,7 +56,6 @@ export default class Home extends Component {
     AudioRecord.on("data", data => {
       const chunk = Buffer.from(data, "base64");
       console.log("chunk size", chunk.byteLength);
-      // do something with audio chunk
     });
   }
 
@@ -75,12 +77,31 @@ export default class Home extends Component {
     AudioRecord.start();
   };
 
+  uploadAudio = async () => {
+    this.setState({ isUploading: true });
+    RNFetchBlob.fetch('POST', 'http://8c79c203.ngrok.io/proAudio', {
+      'Content-Type': 'multipart/form-data',
+    }, [
+      { name: 'file', filename: 'file.wav', type: 'audio/wav', data: RNFetchBlob.wrap(this.state.audioFile) },
+    ]).then((resp) => {
+      // Alert.alert(resp.data);
+      let resultTrans = resp.data.replace(/["]+/g, '')
+      this.setState({ isUploading: false, trans: resultTrans });
+      console.log(resp);
+    }).catch((err) => {
+      this.setState({ isUploading: false });
+      //Alert.alert("Something was wrong", err);
+      console.error(err);
+    });
+  };
+
   stop = async () => {
     console.log("stop");
     if (!this.state.recording) return;
     console.log("stop record");
     let audioFile = await AudioRecord.stop();
     console.log("audioFile", audioFile);
+    console.log(typeof audioFile);
     this.setState({ audioFile, recording: false });
   };
 
@@ -144,89 +165,78 @@ export default class Home extends Component {
             </Button>
           </Left>
 
-          <Body>
+          {/* <Body>
             <Title style={{ color: "white" }}>Home</Title>
-          </Body>
+          </Body> */}
 
           <Right>
             <Button
               danger
               onPress={() => this.stop()}
               disabled={!this.state.recording}
-              style={{
-                marginRight: 10,
-                alignSelf: "flex-end",
-                paddingTop: 0,
-                paddingBottom: 0,
-                height: 40,
-                width: 40,
-                justifyContent: "center"
-              }}
+              style={styles.playerButton}
             >
               <Icon
                 type="FontAwesome"
                 android="stop"
                 ios="stop"
-                style={{
-                  color: "white",
-                  marginLeft: 0,
-                  marginRight: 0,
-                  fontSize: 24
-                }}
+                style={styles.playerIcon}
               />
             </Button>
             <Button
               danger
               onPress={() => this.play()}
               disabled={!this.state.audioFile}
-              style={{
-                marginRight: 10,
-                alignSelf: "flex-end",
-                paddingTop: 0,
-                paddingBottom: 0,
-                height: 40,
-                width: 40,
-                justifyContent: "center"
-              }}
+              style={styles.playerButton}
             >
-              <Icon
-                name="play"
-                style={{
-                  color: "white",
-                  marginLeft: 0,
-                  marginRight: 0,
-                  fontSize: 24
-                }}
-              />
+              <Icon name="play" style={styles.playerIcon} />
             </Button>
-
             <Button
               danger
               onPress={() => this.start()}
               disabled={this.state.recording}
-              style={{
-                alignSelf: "flex-end",
-                paddingTop: 0,
-                paddingBottom: 0,
-                height: 40,
-                width: 40,
-                justifyContent: "center"
-              }}
+              style={styles.playerButton}
             >
-              <Icon
-                name="mic"
-                style={{
-                  color: "white",
-                  marginLeft: 0,
-                  marginRight: 0,
-                  fontSize: 24
-                }}
-              />
+              <Icon name="mic" style={styles.playerIcon} />
+            </Button>
+            <Button
+              danger
+              onPress={() => this.uploadAudio()}
+              disabled={this.state.audioFile ===""}
+              style={styles.playerButtonEnd}
+            >
+              <Icon name="send" style={styles.playerIcon} />
             </Button>
           </Right>
         </Header>
-        <Chat />
+        <Chat isUploading={this.state.isUploading} transcript={this.state.trans} />
       </Container>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  playerButton: {
+    marginRight: 10,
+    alignSelf: "flex-end",
+    paddingTop: 0,
+    paddingBottom: 0,
+    height: 40,
+    width: 40,
+    justifyContent: "center"
+  },
+  playerButtonEnd: {
+    alignSelf: "flex-end",
+    paddingTop: 0,
+    paddingBottom: 0,
+    height: 40,
+    width: 40,
+    justifyContent: "center"
+  },
+  playerIcon: {
+    color: "white",
+    marginLeft: 0,
+    marginRight: 0,
+    fontSize: 24
+  }
+});

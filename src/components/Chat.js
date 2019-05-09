@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Alert } from "react-native";
+import { Alert, StyleSheet, View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { Icon } from 'native-base';
 import Tts from "react-native-tts";
 import fire from "../config/fire";
 import { MessageRequest } from "../config/Assistant";
@@ -21,6 +22,21 @@ export default class Chat extends Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.transcript!=prevProps.transcript) {
+      const message = {
+        _id: Math.round(Math.random() * 1000000).toString(),
+        text: this.props.transcript,
+        createdAt: new Date(),
+        user: { _id: 1 }
+      };
+      this.setState(previousState => ({
+        messages: GiftedChat.append(previousState.messages, message)
+      }));
+      this.getMessage(this.props.transcript);
+    }
+  }
+
   componentDidMount() {
     //connect to firebase and fetch name, balance, uid
     const uid = fire.auth().currentUser.uid;
@@ -35,7 +51,8 @@ export default class Chat extends Component {
             Username: snapshot.val().name,
             balance: snapshot.val().accountBalance,
             uid
-          },
+          }
+          ,
           () => {
             this.initalMessage();
           }
@@ -51,9 +68,10 @@ export default class Chat extends Component {
     this.setState(
       previousState => ({
         messages: GiftedChat.append(previousState.messages, message)
-      }),
+      })
+      ,
       () => {
-        this.getMessage(message[0].text.replace(/[\n\r]+/g, " "));
+        this.getMessage(message[0].text.replace(/[\n\r]+/g));
       }
     );
   };
@@ -73,7 +91,7 @@ export default class Chat extends Component {
         _id: Math.round(Math.random() * 1000000).toString(),
         text: txt,
         createdAt: new Date(),
-        user: { _id: "2" }
+        user: { _id: 2 }
       };
       this.setState(previousState => ({
         messages: GiftedChat.append(previousState.messages, message)
@@ -96,7 +114,7 @@ export default class Chat extends Component {
           _id: Math.round(Math.random() * 1000000).toString(),
           text: txt,
           createdAt: new Date(),
-          user: { _id: "2" }
+          user: { _id: 2 }
         };
         this.setState(previousState => ({
           messages: GiftedChat.append(previousState.messages, message)
@@ -132,6 +150,19 @@ export default class Chat extends Component {
     );
   }
 
+  doSomething = () => {
+    Alert.alert("DO");
+  }
+
+  renderCustomActions = () => {
+    return (
+       this.props.isUploading && 
+        <View style={styles.customActionsContainer}>
+        <ActivityIndicator style={styles.buttonContainer} size="small" color="#0064e1" />
+      </View>
+    )
+  };
+
   render() {
     return (
       <GiftedChat
@@ -140,7 +171,18 @@ export default class Chat extends Component {
         renderBubble={this.renderBubble}
         user={{ _id: 1 }}
         renderAvatar={null}
+        renderActions={this.renderCustomActions}
       />
     );
   }
 }
+
+const styles = StyleSheet.create({
+  customActionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  buttonContainer: {
+    padding: 10
+  },
+});

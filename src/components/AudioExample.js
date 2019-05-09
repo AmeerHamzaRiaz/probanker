@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, Alert, Text, ActivityIndicator } from "react-native";
 import { Buffer } from "buffer";
 import Permissions from "react-native-permissions";
 import Sound from "react-native-sound";
 import AudioRecord from "react-native-audio-record";
+import RNFetchBlob from 'rn-fetch-blob';
 
 export default class AudioExample extends Component {
   sound = null;
@@ -11,7 +12,9 @@ export default class AudioExample extends Component {
     audioFile: "",
     recording: false,
     loaded: false,
-    paused: true
+    paused: true,
+    transcript: "",
+    uploading: false
   };
 
   async componentDidMount() {
@@ -59,6 +62,25 @@ export default class AudioExample extends Component {
     this.setState({ audioFile, recording: false });
   };
 
+  uploadAudio = async () => {
+    this.setState({ uploading: true });
+    console.log("UPLOAD AUDIO");
+    RNFetchBlob.fetch('POST', 'http://8c79c203.ngrok.io/proAudio', {
+      'Content-Type': 'multipart/form-data',
+    }, [
+      { name: 'file', filename: 'file.wav', type: 'audio/wav', data: RNFetchBlob.wrap(this.state.audioFile) },
+    ]).then((resp) => {
+      this.setState({ transcript: resp.data });
+     // Alert.alert("res", resp.data);
+      this.setState({ uploading: false });
+      console.log(resp);
+    }).catch((err) => {
+      this.setState({ uploading: false });
+      //Alert.alert("Something was wrong", err);
+      console.error(err);
+    });
+  }
+
   load = () => {
     return new Promise((resolve, reject) => {
       if (!this.state.audioFile) {
@@ -105,17 +127,24 @@ export default class AudioExample extends Component {
   };
 
   render() {
-    const { recording, paused, audioFile } = this.state;
+    const { recording, paused, audioFile, transcript, uploading } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.row}>
           <Button onPress={this.start} title="Record" disabled={recording} />
           <Button onPress={this.stop} title="Stop" disabled={!recording} />
-          {paused ? (
-            <Button onPress={this.play} title="Play" disabled={!audioFile} />
-          ) : (
-            <Button onPress={this.pause} title="Pause" disabled={!audioFile} />
-          )}
+          {
+            paused ? 
+           (<Button onPress={this.play} title="Play" disabled={!audioFile} />)
+           : (<Button onPress={this.pause} title="Pause" disabled={!audioFile} />)
+           }
+          <Button onPress={this.uploadAudio} title="Upload" disabled={!audioFile} />
+        </View>
+        <View style={{ flexDirection: "column", marginTop: 80, justifyContent: "center" }}>
+          <Text style={{ textAlign: "center", fontSize: 20, fontWeight: 'bold' }} >{transcript}</Text>
+          {
+            uploading && <ActivityIndicator size="large" color="#0000ff" />
+          }
         </View>
       </View>
     );

@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "buffer": "^5.2.1",
     "firebase": "^5.10.0",
     "ibm-watson": "^4.0.2",
@@ -20,7 +21,8 @@
     "react-native-permissions": "^1.1.1",
     "react-native-sound": "^0.10.12",
     "react-native-tts": "^3.0.0",
-    "react-navigation": "^2.0.0"
+    "react-navigation": "^2.0.0",
+    "rn-fetch-blob": "^0.10.15"
   },
   "devDependencies": {
     "@babel/core": "7.4.3",

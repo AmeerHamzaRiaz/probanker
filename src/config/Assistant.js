@@ -2,10 +2,10 @@ import base64 from 'react-native-base64';
 import { Alert } from 'react-native';
 
 const USERNAME = 'apikey';
-const PASSWORD = 'MXORuvTctcKP5IbXPySFM0wsE1exIHEvuJbZn2T9NwTh';
-const URL = 'https://gateway.watsonplatform.net/assistant/api';
+const PASSWORD = 'password';
+const URL = 'url';
 const VERSION = '2019-04-24';
-const WORKSPACE_ID = '5be03472-03c4-4a4e-8bd6-c218b5a8f9c3';
+const WORKSPACE_ID = 'id';
 
 // Watson Assistant API documentation:
 // https://console.bluemix.net/apidocs/assistant

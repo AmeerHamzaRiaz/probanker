@@ -3,6 +3,8 @@
 A cross platform mobile application developed using react-native to provide realtime interaction with the deployed deepspeech model.
 ![system architecture](arch.png?raw=true "System Architecture")
 
+![Sample Page](https://imgur.com/a/NRaCAsp)
+
 Having following dependencies:
 * axios (^0.18.0): Promise based HTTP client for the browser and node.js
 * buffer (^5.2.1): Module similar to node.js buffer API.

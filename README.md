@@ -3,7 +3,7 @@
 A cross platform mobile application developed using react-native to provide realtime interaction with the deployed deepspeech model.
 ![system architecture](arch.png?raw=true "System Architecture")
 
-![Sample Page](https://imgur.com/a/NRaCAsp)
+<blockquote class="imgur-embed-pub" lang="en" data-id="a/NRaCAsp"><a href="//imgur.com/a/NRaCAsp"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
 
 Having following dependencies:
 * axios (^0.18.0): Promise based HTTP client for the browser and node.js

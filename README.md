@@ -1,6 +1,8 @@
 # probanker
 
 A cross platform mobile application developed using react-native to provide realtime interaction with the deployed deepspeech model.
+
+
 ![system architecture](arch.png?raw=true "System Architecture")
 
 Screenshotlink https://imgur.com/a/NRaCAsp
